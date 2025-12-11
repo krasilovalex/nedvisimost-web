@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user_scalable=no">
+    <title>NedvisimostRossii</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar {display: none;}
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none;}
+        .snap-x  {scroll-snap-type: x mandatory;}
+        .snap-center {scroll-snap-align: center}
+
+        .scroll-smooth {scroll-behavior: smooth;}
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; opacity: 0; transition: opacity 0.25s ease-in-out;}
+        body.loaded {opacity: 1;}
+    </style>
+
+</head>
+<body class="bg-gray-50 text-gray-900 pb-24">
+
+    <div id="splash-screen" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+    <h1 class="text-xl font-extrabold tracking-tight uppercase text-emerald-800">Nedvisimost</h1>
+    <p class="text-xs text-gray-400 mt-2">Вход в аккаунт...</p>
+    </div>
+
+    <div id="app" class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl flex flex-col">
+        <header class="bg-white px-5 pt-4 pb-2 sticky top-0 z-20 rounded-b-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-xl text-emerald-800 font-extrabold tracking-tight uppercase">Nedvisimost</h1>
+                <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                    <img src="" alt="User" id="user-avatar" class="w-full h-full object-cover opacity-0 transition opacity duration-300">
+                </div>
+            </div>
+
+            <div class="bg-gray-100 p-1 rounded-xl flex mb-3 relative">
+                    <button id="btn-buy" onclick="window.switchType('buy')" 
+                            class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-white shadow-sm text-gray-900">
+                        Купить
+                    </button>
+                    <button id="btn-rent" onclick="window.switchType('rent')" 
+                            class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all text-gray-500 hover:text-gray-900">
+                        Снять
+                    </button>
+                </div>
+
+            <div class="relative mb-4">
+                <input type="text" placeholder="Метро, район или улица..." class="w-full bg-gray-100 text-gray-900 border border-gray-200 rounded-2xl py-3.5 pl-11 pr-4 text-[15px] placeholder-gray-400 focus:outline-none focus: bg-white focus:ring-2 focus:ring-gray-200 transition-all" >
+                <span class="absolute left-4 top-3.5 text-gray-400 text-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+                </span>
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <button onclick="window.toggleFilters(true)" class="bg-teal-600 border border-gray-200 text-white px-4 py-2 rounded-lg text-[11px] font-semibold whitespace-nowrap ">
+                    Фильтры
+                </button>
+            </div>
+        </header>
+
+        <main id="ads-container" class="flex-1 px-4 py-4 grid grid-cols-4 gap-3 ovreflow-y-auto pb-24">
+            <div class="col-span-2 text-center mt-10 text-gray-400 text-sm animate-pulse">
+                Загрузка предложений...
+            </div>
+        </main>
+
+        <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center z-40 pb-safe">
+            <button class="flex flex-col items-center gap-1 text-emerald-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" /><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" /></svg>
+                <span class="text-[10px] font-medium">Поиск</span>
+            </button>
+            <button onclick="window.location.href='favorites.html'" class="flex flex-col items-center gap-1 text-gray-400 hover:text-emerald-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                <span class="text-[10px] font-medium">Избранное</span>
+            </button>
+            <button onclick="window.location.href='profile.html'" class="flex flex-col items-center gap-1 text-gray-400 hover:text-emerald-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <span class="text-[10px] font-medium">Профиль</span>
+            </button>
+            <div class="relative">
+                <button id="create-ad-btn" class="w-14 h-14 bg-emerald-600 rounded-full shadow-lg shadow-emerald-200 flex items-center justify-center text-white active:scale-95 transition-transform border-[4px] border-white box-content">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </button>
+            </div>
+        </nav>
+        
+    </div>
+
+
+
+
+    
+    
+
+
+
+    <div id="filters-modal" class="fixed inset-0 z-50 hidden">
+        <div onclick="window.toggleFilters(false)" id="filters-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity opacity-0"></div>
+
+        <div id="filters-content" class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-5 pb-safe transform translate-y-full transition-transform duration-300 flex flex-col max-h-[90vh]">
+
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold">Фильтры</h2>
+                <button onclick="window.toggleFilters(false)" class="bg-gray-100 p-1.5 rounded-full text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div>
+                <label for="" class="text-xs font-bold text-gray-500 uppercase mb-2 block">Сортировки</label>
+                <select name="" id="f-sort" class="w-full bg-gray-50 border-r-8 border-transparent px-3 py-3 rounded-xl text-sm font-medium outline-none">
+                        <option value="newest">Сначала новые</option>
+                        <option value="price_asc">Сначала дешевле</option>
+                        <option value="price_desc">Сначала дороже</option>
+                        <option value="area_desc">По площади(больше)</option>
+                </select>
+            </div>
+
+            <div class="overflow-y-auto no-scrollbar flex-1 space-y-6 pb-20">
+                <div class="space-y-3">
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase">Город</label>
+                        <input id="f-city" type="text" placeholder="Москва" class="w-full border-b border-gray-200 py-2 text-sm font-medium outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase">Район</label>
+                        <input id="f-district" type="text" placeholder="Любой" class="w-full border-b border-gray-200 py-2 text-sm font-medium outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase">Метро</label>
+                        <input id="f-metro" type="text" placeholder="Любое" class="w-full border-b border-gray-200 py-2 text-sm font-medium outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="" class="text-xs font-bold text-gray-500 uppercase mb-2 block">Цена, ₽</label>
+                    <div class="flex gap-3">
+                        <input id="f-price-min" type="number" placeholder="От" class="w-full bg-gray-50 rounded-xl px-3 py-2 5 text-sm outline-none">
+                        <input type="number" id="f-price-max" placeholder="До" class="w-full bg-gray-50 rounded-xl px-3 py-2 5 text-sm outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="" class="text-xs font-bold text-gray-500 uppercase mb-2 block">Комнаты</label>
+                    <div id="rooms-filter-group" class="flex gap-2">
+                        <button onclick="window.toggleRoom(this, 'studio')" class="room-btn border border-gray-200 px-4 py-2 rounded-xl text-xs font-medium text-gray-600">Студия</button>
+                        <button onclick="window.toggleRoom(this, '1')" class="room-btn border border-gray-200 px-4 py-2 rounded-xl text-xs font-medium text-gray-600">1</button>
+                        <button onclick="window.toggleRoom(this, '2')" class="room-btn border border-gray-200 px-4 py-2 rounded-xl text-xs font-medium text-gray-600">2</button>
+                        <button onclick="window.toggleRoom(this, '3')" class="room-btn border border-gray-200 px-4 py-2 rounded-xl text-xs font-medium text-gray-600">3</button>
+                        <button onclick="window.toggleRoom(this, '4+')" class="room-btn border border-gray-200 px-4 py-2 rounded-xl text-xs font-medium text-gray-600">4+</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase-mb-2 block">Площадь</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="f-area-min" placeholder="От" class="w-full bg-gray-50 rounded-xl px-2 py-2 py-2 text-sm outline-none">
+                            <input type="number" id="f-area-max" placeholder="До" class="w-full bg-gray-50 rounded-xl px-2 py-2 py-2 text-sm outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase-mb-2 block">Этаж</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="f-floor-min" placeholder="С" class="w-full bg-gray-50 rounded-xl px-2 py-2 py-2 text-sm outline-none">
+                            <input type="number" id="f-floor-max" placeholder="По" class="w-full bg-gray-50 rounded-xl px-2 py-2 py-2 text-sm outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase-mb-2 block">Тип дома</label>
+                        <select name="" id="f-house-type" class="w-full bg-gray-50 border-r-8 border-transparent px-3 py-3 rounded-xl text-sm font-medium outline-none">
+                            <option value="">Неважно</option>
+                            <option value="brick">Кирпичный</option>
+                            <option value="panel">Панельный</option>
+                            <option value="monolith">Монолитный</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="" class="text-xs font-bold text-gray-500 uppercase-mb-2 block">Ремонт</label>
+                        <select name="" id="f-renovation" class="w-full bg-gray-50 border-r-8 border-transparent px-3 py-3 rounded-xl text-sm font-medium outline-none">
+                            <option value="">Неважно</option>
+                            <option value="euro">Евро</option>
+                            <option value="cosmetic">Косметический</option>
+                            <option value="design">Дизайнерский</option>
+                            <option value="none">Без ремонта</option>
+                        </select>
+                    </div>
+
+                    <label for="" class="flex items-center justify-between py-2 border-b border-gray-50 cursor-pointer">
+                        <span class="text-sm font-medium">Есть балкон</span>
+                        <input type="checkbox" id="f-balcony" class="accent-emerald-600 w-5 h-5">
+                    </label>
+                </div>
+
+
+
+                <div>
+                    <label for="" class="flex items-center justify-between py-2 border-b border-gray-50 cursor-pointer">
+                        <span class="text-sm font-medium">Только с фото</span>
+                        <input type="checkbox" id="f-photo" checked class="accent-emerald-600 w-5 h-5">
+                    </label>
+                    <label for="" class="flex items-center justify-between py-2 border-b border-gray-50 cursor-pointer">
+                        <span class="text-sm font-medium">От собственника</span>
+                        <input type="checkbox" id="f-owner" class="accent-emerald-600 w-5 h-5">
+                    </label>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-2 rounded">PREMIUM</span>
+                        <span class="text-xs text-gray-400">Фильтры</span>
+                    </div>
+
+                    <div class="space-y-3 opacity-60 cursor-pointer">
+                        <label for="" class="flex items-center justify-between">
+                            <span class="text-sm">Только "Проверенные"</span>
+                            <input type="checkbox" id="f-verifed" class="accent-emerald-600 w-4 h-4">
+                        </label>
+                        <label for="" class="flex items-center justify-between">
+                            <span class="text-sm">Скрыть риелторов</span>
+                            <input type="checkbox" class="w-4 h-4">
+                        </label>
+                        <label for="" class="flex items-center justify-between">
+                            <span class="text-sm">Дата публикации</span>
+                            <span class="text-xs text-emerald-600">Выбрать</span>
+                        </label>
+                    </div>
+                    <button class="w-full mt-3 bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg">Подключить за 349 ₽/мес</button>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100">
+                    <button onclick="window.applyFilters()" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform">
+                        Показать результаты
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

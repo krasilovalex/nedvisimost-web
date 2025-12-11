@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать объявление</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+        .scrollbar-hide::-webkit-scrollbar {display: none;}
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none;}
+        .snap-x  {scroll-snap-type: x mandatory;}
+        .snap-center {scroll-snap-align: center}
+
+        .scroll-smooth {scroll-behavior: smooth;}
+         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; opacity: 0; transition: opacity 0.25s ease-in-out;}
+        body.loaded {opacity: 1;}
+    </style>
+
+</head>
+<body class="bg-gray-50 text-gray-900 pb-24">
+    
+    <header class="bg-white p-4 sticky top-0 z-30 flex justify-between items-center shadow-sm">
+        <h1 class="text-lg font-extrabold text-gray-800">Новое объявление</h1>
+        <button onclick="window.history.back()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900">
+            ✕
+        </button>
+    </header>
+
+    <form action="" id="create-ad-form" class="p-4 flex flex-col gap-5">
+        <div class="bg-white p-4 rounded-2xl shadow-sm">
+            <label for="" class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Тип сделки</label>
+            <div class="flex bg-gray-100 p-1 rounded-xl">
+                <label for="" class="flex-1 cursor-pointer">
+                    <input type="radio" name="deal_type" value="sell" class="peer hidden" checked>
+                    <div class="py-2 5 text-center text-sm font-bold rounded lg text-gray-500 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Продать</div>
+                </label>
+                <label for="" class="flex-1 cursor-pointer">
+                    <input type="radio" name="deal_type" value="rent" class="peer hidden" checked>
+                    <div class="py-2 5 text-center text-sm font-bold rounded lg text-gray-500 peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Сдать</div>
+                </label>
+            </div>   
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm flex flex-col gap-4">
+            <h2 class="text-sm font-bold text-gray-800">Расположение</h2>
+            <div class="">
+                <label for="" class="block text-sx text-gray-500 mb-1.5">Город</label>
+                <input name="city" value="Москва" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-emerald-500 outline-none">
+            </div>
+            <div class="">
+                <label for="" class="block text-sx text-gray-500 mb-1.5">Метро</label>
+                <input name="metro" placeholder="Например: Тверская" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-emerald-500 outline-none">
+            </div>
+            <div class="">
+                <label for="" class="block text-sx text-gray-500 mb-1.5">Адрес</label>
+                <input name="address"  placeholder="Улица, дом" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-emerald-500 outline-none">
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm flex flex-col gap-4">
+            <h2 class="text-sm font-bold text-gray-800">О квартире</h2>
+            
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="" class="block text-xs text-gray-500 mb-1.5">Комнат</label>
+                    <select name="rooms" id="" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none bg-white">
+                        <option value="studio">Студия</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4+">4+</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="" class="block text-xs text-gray-500 mb-1.5">Площадь, м²</label>
+                    <input type="number" name="area"  placeholder="45" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="" class="block text-xs text-gray-500 mb-1.5">Этаж</label>
+                    <input type="number" name="floor" placeholder="5" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
+                </div>
+                <div>
+                    <label for="" class="block text-xs text-gray-500 mb-1.5">Этажность</label>
+                    <input type="number" name="total_floors" placeholder="12" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label for="" class="block text-xs text-gray-500 mb-1.5">Тип дома</label>
+                <select name="" id="" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none bg-white">
+                    <option value="brick">Кирпичный</option>
+                    <option value="panel">Панельный</option>
+                    <option value="monolith">Монолитный</option>
+                </select>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-1">
+                <label for="" class="cursor-pointer">
+                    <input type="checkbox" name="balcony" class="peer hidden">
+                    <div class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer_checked:text-emerald-700 transiiton-all">
+                        Есть балкон
+                    </div>
+                </label>
+                <label for="" class="cursor-pointer">
+                    <input type="checkbox" name="renovation" class="peer hidden">
+                    <div class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer_checked:text-emerald-700 transiiton-all">
+                        Евроремонт
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm">
+            <label for="" class="block text-sm font-bold text-gray-800 mb-2">Фотографии</label>
+            <div class="flex gap-2 overflow-x auto pb-2 scrollbar hide">
+                <div class="w-20 h-20 shrink-0 bg-emerald-50 border border-emerald-200 border-dashed rounded-xl flex flex-col items-center justify-center text-emerald-600 cursor-pointer hover:bg-emerald-100 transition-colors">
+                    <span class="text-2xl leading-none">+</span>
+                </div>
+                <div class="w-20 h-20 shrink-0 bg-gray-200 rounded-xl relative overflow-hidden">
+                    <img src="https://placehold.co/100" class="w-full object-cover opacity-60" alt="">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm flex flex-col gap-4">
+            <div>
+                <label for="" class="block text-sm font-bold text-gray-800 mb-1.5">Цена, ₽</label>
+                <input name="price" placeholder="0" type="number" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-emerald-500 outline-none">
+            </div>
+            <div>
+                <label for="" class="block text-sm font-bold text-gray-800 mb-1.5">Описание</label>
+                <textarea name="description" rows="4" placeholder="Опишите преимущества..." class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-emerald-500 outline-none resize-none"></textarea>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm">
+            <label for="" class="block text-sm font-bold text-gray-800 mb-1.5">Как с вами связаться</label>
+            <p class="text-xs text-gray-400 mb-2">Например : звонить после 18:00 или пишите в ТГ @username</p>
+            <input type="text" name="contact-info" placeholder="Телефон, почта или ник в Telegram" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 z-40 safe-area-pb">
+            <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                <span>Опубликовать</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </div>
+    </form>
+
+
+    <div id="success-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-[24px] p-6 w-[85%] max-w-xs shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4 text-emerald-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-gray-900 mb-2">Отправлено!</h3>
+
+            <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+                Объявление ушло на модерацию. <br>Это займет около 15 минут.
+            </p>
+
+            <button id="modal-close-btn" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow lg shadow-emerald-200 active:scale-95 transition-transform">
+                Отлично!
+            </button>
+        </div>
+    </div>
+
+    
+
+    <script type="module" src="js/create.js"></script>
+</body>
+</html>
